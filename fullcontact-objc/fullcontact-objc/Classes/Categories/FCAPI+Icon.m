@@ -24,8 +24,8 @@
 @implementation FCAPI (Icon)
 
 - (void)getIcon:(NSString*)typeId
-          withSize:(NSInteger)size
-          andStyle:(NSString*)style
+       withSize:(NSInteger)size
+       andStyle:(NSString*)style
         success:(FCImageSuccessBlock)success
         failure:(FCImageFailureBlock)failure
 {
@@ -41,27 +41,27 @@
     
     NSAssert([style isEqualToString:@"default"] || [style isEqualToString:@"dark"] || [style isEqualToString:@"light"], @"style must be default, dark, or white");
     
-    [self registerHTTPOperationClass:[AFImageRequestOperation class]];
-    [self setDefaultHeader:@"Accept" value:@"image/png"];
-    [self setDefaultHeader:@"Content-Type" value:@"image/png"];
+    [self.requestSerializer setValue:@"image/png" forHTTPHeaderField:@"Accept"];
+    [self.requestSerializer setValue:@"image/png" forHTTPHeaderField:@"Content-Type"];
     
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-        NSString *method = [NSString stringWithFormat:@"%@/%@/%@/%ld/%@", self.apiVersion, ENDPOINT_ICON, typeId, (long)size, style];
+    NSString *method = [NSString stringWithFormat:@"%@/%@/%@/%ld/%@", self.apiVersion, ENDPOINT_ICON, typeId, (long)size, style];
 #elif __MAC_OS_X_VERSION_MIN_REQUIRED
-        NSString *method = [NSString stringWithFormat:@"%@/%@/%@/%ld/%@", self.apiVersion, ENDPOINT_ICON, typeId, size, style];
+    NSString *method = [NSString stringWithFormat:@"%@/%@/%@/%ld/%@", self.apiVersion, ENDPOINT_ICON, typeId, size, style];
 #endif
-      
+    
     NSDictionary *parameters = nil;
-    [self prepareCall:&parameters];
-    [super getPath:method parameters:parameters success:^(AFHTTPRequestOperation *operation, id data) {
+    
+    [self setAuthHeaders];
+    [self GET:method parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (success)
-            success(data);
-       [self restoreDefaultState];
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		if (failure)
+            success(responseObject);
+        [self restoreDefaultState];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if (failure)
             failure(error);
         [self restoreDefaultState];
-	}];
+    }];
 }
 
 @end

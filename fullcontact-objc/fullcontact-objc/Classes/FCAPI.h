@@ -36,32 +36,21 @@
 #define ENDPOINT_STATS @"stats.json"
 
 #import "AFNetworking.h"
-#import "AFHTTPClient.h"
 
 @class FCResponse;
 
 typedef void(^FCSuccessBlock)		(FCResponse* response);
 typedef void(^FCFailureBlock)		(FCResponse* response, NSError* error);
 
-@interface FCAPI : AFHTTPClient
+@interface FCAPI : AFHTTPRequestOperationManager
 
-@property (nonatomic) NSString* apiVersion;
-@property (nonatomic) NSString* userAgent;
-
-- (id)initWithBaseURL:(NSURL*)url
-		   andVersion:(NSString*)version
-			andAPIKey:(NSString*)apiKey DEPRECATED_MSG_ATTRIBUTE("Use -(id)initWithBaseURL:(NSURL*)url andVersion:(NSString*)version instead.");
+@property (nonatomic, retain) NSString* apiVersion;
+@property (nonatomic, retain) NSString* apiKey;
+@property (nonatomic, retain) NSString* userAgent;
 
 - (id)initWithBaseURL:(NSURL*)url
-		   andVersion:(NSString*)version;
-
-- (void)useAPIKey:(NSString*)apiKey;
-
-- (void)useAccessToken:(NSString*)accessToken;
-
-- (void)prepareCall:(NSDictionary **)parameters;
-
-- (void)setAPIKey:(NSString*)apiKey DEPRECATED_MSG_ATTRIBUTE("Use -(void)useApiKey:(NSString*)apiKey instead.");
+           andVersion:(NSString*)version
+            andAPIKey:(NSString*)apiKey;
 
 -(void)get:(NSString*)method
 withParameters:(NSDictionary*)parameters
@@ -70,8 +59,8 @@ withParameters:(NSDictionary*)parameters
 
 -(void)post:(NSString*)method
 withParameters:(NSDictionary*)parameters
-	success:(FCSuccessBlock)success
-	failure:(FCFailureBlock)failure;
+    success:(FCSuccessBlock)success
+    failure:(FCFailureBlock)failure;
 
 - (void)post:(NSString *)method
   parameters:(NSDictionary *)parameters
@@ -110,12 +99,13 @@ failure:(FCFailureBlock)failure;
 
 -(void)processSuccess:(id)response
          forOperation:(AFHTTPRequestOperation*)operation
-	 withSuccessBlock:(FCSuccessBlock)successBlock;
+     withSuccessBlock:(FCSuccessBlock)successBlock;
 
 -(void)processFailure:(NSError*)error
-		 forOperation:(AFHTTPRequestOperation*)operation
-	 withFailureBlock:(FCFailureBlock)failureBlock;
+         forOperation:(AFHTTPRequestOperation*)operation
+     withFailureBlock:(FCFailureBlock)failureBlock;
 
 -(void)restoreDefaultState;
+-(void)setAuthHeaders;
 
 @end
